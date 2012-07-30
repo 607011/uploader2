@@ -1,0 +1,277 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html, body {
+    font-size: 11px;
+    font-family: Tahoma, Arial, sans-serif;
+    color: Black;
+    background-color: White;
+    -webkit-font-smoothing: antialiased;
+}
+body {
+    margin: 8px;
+    opacity: 0;
+    border: 1px solid Black;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px #888;
+    -webkit-box-shadow: 0px 0px 5px #888;
+    -moz-box-shadow: 0px 0px 5px #888;
+}
+body.starting {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    -moz-transition: opacity 0.3s ease;
+    -o-transition: opacity 0.3s ease;
+    -webkit-transition: opacity 0.3s ease;
+}
+h1, h2 {
+    background-image: linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-color: DarkSlateGray;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0;
+    color: white;
+    padding: 1ex 1em;
+}
+h2 {
+    margin: 0;
+    font-size: 12px;
+    border-radius: 0;
+}
+h2 > a {
+    color: white;
+    text-decoration: none;
+}
+h2 > a:hover {
+    color: white;
+    text-decoration: underline;
+}
+h2 > a:visited {
+    color: white;
+}
+a {
+    color: #222;
+}
+a:visited {
+    color: #444;
+}
+a:hover {
+    color: #000;
+}
+#filedrop {
+    color: #000;
+    background-color: Beige;
+    transition: background-color 0.25s linear;
+    -moz-transition: background-color 0.25s linear;
+    -o-transition: background-color 0.25s linear;
+    -webkit-transition: background-color 0.25s linear;
+}
+#filedrop.over {
+    background-color: LemonChiffon;
+    transition: background-color 0.25s linear;
+    -moz-transition: background-color 0.25s linear;
+    -o-transition: background-color 0.25s linear;
+    -webkit-transition: background-color 0.25s linear;
+}
+#filedrop-chooser {
+    display: inline-block;
+    text-align: center;
+    padding: 30px 0 0 0;
+}
+#filedrop-inner-box {
+    text-align: center;
+    padding-bottom: 10px;
+}
+#filedrop-hint {
+    clear: both;
+    text-align: center;
+    padding: 3ex 1em;
+    margin: 3ex 1em 0 1em;
+    color: #444;
+    font-size: 110%;
+}
+button {
+    box-shadow: inset 0 0 1px white;
+    cursor: pointer;
+    border-radius: 2px;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #888;
+    background-color: #e0e0e0;
+    background-image: linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -o-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -moz-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -webkit-linear-gradient(bottom, rgb(200,200,200) 8%, rgb(250,250,250) 89%);
+    font-family: Tahoma, Arial, sans-serif;
+    padding: 0.5ex 0.5em;
+    font-size: 12px;
+    margin: 1ex 0;
+}
+button.huge {
+    padding: 2ex 4em;
+    font-size: 13px;
+    font-weight: bold;
+}
+button:hover {
+    background-image: linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -o-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -moz-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+    background-image: -webkit-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
+}
+#filelist-container {
+    background-color: Beige;
+    padding: 2ex 1em 3ex 1em;
+}
+#filelist {
+    list-style-type: none;
+    margin-left: 0;
+    line-height: 120%;
+    opacity: 0;
+    transition: opacity 0.25s linear;
+    -moz-transition: opacity 0.25s linear;
+    -o-transition: opacity 0.25s linear;
+    -webkit-transition: opacity 0.25s linear;
+}
+#filelist.visible {
+    opacity: 1;
+    transition: opacity 0.25s linear;
+    -moz-transition: opacity 0.25s linear;
+    -o-transition: opacity 0.25s linear;
+    -webkit-transition: opacity 0.25s linear;
+}
+.progressbar-container {
+    margin: 1px 0.5em 1px 0;
+    padding: 1px;
+    display: inline-block;
+    width: 50px;
+    height: 12px;
+    border: 1px solid #000;
+    background-color: #fff;
+}
+.progressbar {
+    display: inline-block;
+    height: 100%;
+    width: 0;
+    background-color: #666;
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 154, 26, 1) 25%, transparent 25%, transparent 50%, rgba(255, 154, 26, 1) 50%, rgba(255, 154, 26, 1) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(-45deg, rgba(255, 154, 26, 1) 25%, transparent 25%, transparent 50%, rgba(255, 154, 26, 1) 50%, rgba(255, 154, 26, 1) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(-45deg, rgba(255, 154, 26, 1) 25%, transparent 25%, transparent 50%, rgba(255, 154, 26, 1) 50%, rgba(255, 154, 26, 1) 75%, transparent 75%, transparent);
+    -webkit-background-size: 24px 24px;
+    -moz-background-size: 24px 24px;
+    background-size: 24px 24px;
+    -webkit-box-shadow: inset 0 6px 0 rgba(255, 255, 255, .2);
+    -moz-box-shadow: inset 0 6px 0 rgba(255, 255, 255, .2);
+    box-shadow: inset 0 6px 0 rgba(255, 255, 255, .2);
+    -webkit-animation: move 2s linear infinite;
+    -moz-animation: move 2s linear infinite;
+    animation: move 2s linear infinite;
+    background-position: 0 0;
+}
+@-webkit-keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: 24px 24px; }
+}
+@-moz-keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: 24px 24px; }
+}
+@-ms-keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: 24px 24px; }
+}
+@-keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: 24px 24px; }
+}
+.upload {
+    opacity: 0;
+}
+#upload-form {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#upload-icon {
+}
+.upload.starting {
+    opacity: 1;
+    -moz-transition: opacity 0.4s linear;
+    -o-transition: opacity 0.4s linear;
+    -webkit-transition: opacity 0.4s linear;
+}
+.progressbar.ready {
+    width: 100%;
+    background-color: #3c3;
+    background-image: none;
+    -webkit-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    -moz-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+}
+.progressbar.aborted {
+    width: 100%;
+    background-color: rgb(255, 128, 0);
+    background-image: none;
+    -webkit-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    -moz-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    -ms-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+}
+#filelist > li.ready {
+    color: #333;
+}
+#filelist > li.ready.fadeOut {
+    opacity: 0;
+    -moz-transition: opacity 0.25s linear;
+    -o-transition: opacity 0.25s linear;
+    -webkit-transition: opacity 0.25s linear;
+}
+.progressbar.bad {
+    width: 100%;
+    background-color: #c33;
+    background-image: none;
+    -webkit-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    -moz-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    -ms-box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .2);
+}
+#filelist > li.bad {
+    color: red;
+}
+#filelist > li.deleted {
+    text-decoration: line-through;
+}
+#filelist > li.bad.fadeOut {
+    opacity: 0;
+    -moz-transition: opacity 0.25s linear;
+    -o-transition: opacity 0.25s linear;
+    -webkit-transition: opacity 0.25s linear;
+}
+#footer {
+    background-image: linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-color: DarkSlateGray;
+    border-radius: 0 0 5px 5px;
+    color: #999;
+    padding: 1ex 1em;
+}
+#footer > a {
+    color: #ccc;
+    text-decoration: none;
+}
+.mini-button {
+    cursor: pointer;
+}
+#iframe-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
