@@ -1,0 +1,12 @@
+{
+        "upload_dir": "/uploaded",
+        "file_upload_url": "/uploader2/upload.php",
+        "form_upload_url": "/uploader2/form-upload.php",
+        "drop_area": "#filedrop",
+        "file_list": "#filelist",
+        "file_input": "#fileinput",
+        "upload_form": "#upload-form",
+        "file_input_button": "#fileinput-button",
+        "file_list_clear_button": "#filelist-clear-button",
+        "chunk_size": 10240
+}
