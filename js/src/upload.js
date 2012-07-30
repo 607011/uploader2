@@ -1,14 +1,13 @@
 //-*- coding: utf-8 -*-
 // Copyright (c) 2012 by Oliver Lau <oliver@von-und-fuer-lau.de>
-// All rights reserved.
-// $Id: upload.js 40332785d67a 2012/07/19 09:18:46 Oliver Lau <oliver@von-und-fuer-lau.de> $
+// This software is available under the Apache License 2.0.
 
 
 var Uploader = (function() {
     var defaults = {
         upload_dir: "/uploaded",
-        file_upload_url: "/upload/upload.php",
-        form_upload_url: "/upload/form-upload.php",
+        file_upload_url: "/uploader2/upload.php",
+        form_upload_url: "/uploader2/form-upload.php",
         drop_area: "#filedrop",
         file_list: "#filelist",
         file_input: "#fileinput",
@@ -110,7 +109,7 @@ var Uploader = (function() {
 
     function deleteFile(id) {
         $.ajax("delete-file.php", {
-            async: false,
+            async: true,
             data: {
                 id: id,
                 filename: progress[id].file.name
