@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
-<title>Dateien hochladen</title>
+<title>Uploader 2.0</title>
 <!--
-    Copyright (c) 2012 Oliver Lau. All rights reserved.
-    $Id: index.html 40332785d67a 2012/07/19 09:18:46 Oliver Lau <oliver@von-und-fuer-lau.de> $
+    Copyright (c) 2012 Oliver Lau, Heise Zeitschriften Verlag. All rights reserved.
+    See LICENSE.txt for licensing information.
  -->
 <script charset="utf-8" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script>!window.jQuery && document.write('<script src="js/jquery.min.js"><\/script>')</script>
@@ -16,10 +16,10 @@
 <script charset="utf-8" type="text/javascript" src="js/src/upload.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-  $("body").addClass("starting");
   Uploader.init({
     smart_mode: true
   });
+  $("body").addClass("starting");
 });
 </script>
 </head>
@@ -51,7 +51,7 @@ $(document).ready(function() {
   <button id="filelist-clear-button" style="display: none">Liste leeren</button>
 </div><!-- filelist-container -->
 <div id="footer">
-  Copyright &copy; 2012 <a href="mailto:ola@ct.de">Oliver Lau</a>, <a href="http://www.heise.de/" target="_blank">Heise Zeitschriften Verlag</a>. Alle Rechte vorbehalten.
+  Copyright &copy; 2012 <a href="mailto:ola@ct.de">Oliver Lau</a>, <a href="http://www.heise.de/" target="_blank">Heise Zeitschriften Verlag</a>. Lizenziert unter der <a href="www.apache.org/licenses/LICENSE-2.0.html" target="_blank">Apache License 2.0</a>.
 </div>
 <div style="display: none" id="secret-elements">
   <svg class="mini-button" title="Abbrechen" id="stop-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
