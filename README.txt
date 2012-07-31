@@ -10,3 +10,6 @@ einen bestimmten Zweck.
 Falls Sie beabsichtigen, den Code in eigenen Produkten zu verwenden,
 so ist das im Rahmen der Apache-Lizenz 2.0 kostenfrei gestattet (siehe
 die Datei LICENSE.txt für weitere Informationen).
+
+
+Copyright (c) 2012 Heise Zeitschriften Verlag, Oliver Lau <ola@ct.de>
