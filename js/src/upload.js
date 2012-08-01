@@ -357,6 +357,8 @@ var Uploader = (function() {
                 });
             // Einstellungen ggf. mit init()-Parametern ueberschreiben
             settings = $.extend({}, settings, opts);
+            settings.smart_mode =
+                settings.smart_mode === true && typeof window.FileReader === "function";
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
@@ -400,10 +402,7 @@ var Uploader = (function() {
                 $("#filedrop-hint").html("Hochzuladende Dateien durch Klicken ausw&auml;hlen");
                 generateUploadForm();
             }
-            $(settings.file_list_clear_button)
-                .click(function() {
-                    clearFileList();
-                });
+            $(settings.file_list_clear_button).click(clearFileList);
             $("#filedrop-hint").append(".<br/>Upload startet sofort nach der Auswahl.");
         }
     };
