@@ -51,16 +51,19 @@ var Uploader = (function() {
     }
 
 
+    function async_exec(f, ms) {
+        ms = ms || 100;
+        setTimeout(f, ms);
+    }
+
+
     function uploadsInProgress() {
         return Object.keys(progress).length > 0;
     }
 
 
     function clearFileList() {
-        if (!uploadsInProgress()) {
-            reset();
-        }
-        else {
+        if (uploadsInProgress()) {
             $(".ready").addClass("fadeOut");
             $(".bad").addClass("fadeOut");
             $(".aborted").addClass("fadeOut");
@@ -69,6 +72,9 @@ var Uploader = (function() {
                 $(".bad").remove();
                 $(".aborted").remove();
             }, 256);
+        }
+        else {
+            reset();
         }
     }
 
@@ -166,7 +172,7 @@ var Uploader = (function() {
                         return;
                     if (d.status === "ok") {
                         progress[d.id].bytesSent += d.endByte - d.startByte;
-                        var secs = 1e-3 * ((new Date).getTime() - progress[d.id].startTime);
+                        var secs = 1e-3 * (Date.now() - progress[d.id].startTime);
                         if (progress[d.id].bytesSent < file.size) {
                             var percentage = 100 * progress[d.id].bytesSent / file.size;
                             $("#progressbar-" + d.id).css("width", percentage + "%");
@@ -241,6 +247,7 @@ var Uploader = (function() {
     function upload(file) {
         var id = current_upload_id;
         ++current_upload_id;
+        console.log("Upload `" + file.name + "' started.");
         $(settings.file_list)
             .append("<li class=\"upload\" id=\"upload-" + id + "\">" +
                     "<span id=\"progress-" + id + "\" class=\"progressbar-container\">" +
@@ -265,7 +272,7 @@ var Uploader = (function() {
                 });
             progress[id] = {
                 file: file,
-                startTime: (new Date).getTime(),
+                startTime: Date.now(),
                 bytesSent: 0,
                 abort: false,
                 pause: false,
@@ -289,16 +296,17 @@ var Uploader = (function() {
             $.each(files, function() { upload(this); });
             if (!settings.smart_mode) {
                 var id = current_form_id;
-                $("#form-" + id).submit();
-                generateUploadForm();
+                async_exec(function() {
+                    $("#form-" + id).submit();
+                    generateUploadForm();
+                });
             }
         }
     }
 
 
     function generateUploadForm() {
-        ++current_form_id;
-        var id = current_form_id;
+        var id = ++current_form_id;
         $("#iframe-container")
             .append("<iframe id=\"iframe-" + id + "\" name=\"iframe-" + id + "\"></iframe>" +
                     "<form action=\"" + settings.form_upload_url + "\"" +
@@ -312,18 +320,23 @@ var Uploader = (function() {
         $("#fileinput-" + id)
             .bind("change", function(event) {
                 uploadFiles(event.originalEvent.target.files);
+            })
+            .bind("click", function(event) {
+                console.log("Clicked");
             });
-        // Auswahl-Knopf mit neuem Formular verbinden
-        $(settings.file_input_button).unbind("click");
         $(settings.file_input_button)
+            .unbind("click")
             .bind("click", function() {
                 $("#fileinput-" + id).trigger("click");
             });
-        // $("#iframe-" + id).ready(function() { ... }) feuert immer, darum alternativ:
         $("#iframe-" + id).bind("load", { id: id }, function(event) {
-            $(".progressbar").addClass("ready");
-            $("#iframe-" + event.data.id).remove();
-            $("#form-" + event.data.id).remove();
+            var id = event.data.id,
+            iframe = document.getElementById("iframe-" + id).contentDocument;
+            if (iframe.documentURI !== "about:blank") {
+                $(".progressbar").addClass("ready");
+                $("#iframe-" + id).remove();
+                $("#form-" + id).remove();
+            }
         });
     }
 
@@ -357,8 +370,7 @@ var Uploader = (function() {
                 });
             // Einstellungen ggf. mit init()-Parametern ueberschreiben
             settings = $.extend({}, settings, opts);
-            settings.smart_mode =
-                settings.smart_mode === true && typeof window.FileReader === "function";
+            settings.smart_mode = settings.smart_mode && defaults.smart_mode;
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
@@ -398,7 +410,7 @@ var Uploader = (function() {
                     }
                 );
             }
-            else { // fallback
+            else { // fallback mode
                 $("#filedrop-hint").html("Hochzuladende Dateien durch Klicken ausw&auml;hlen");
                 generateUploadForm();
             }
