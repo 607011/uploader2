@@ -247,7 +247,6 @@ var Uploader = (function() {
     function upload(file) {
         var id = current_upload_id;
         ++current_upload_id;
-        console.log("Upload `" + file.name + "' started.");
         $(settings.file_list)
             .append("<li class=\"upload\" id=\"upload-" + id + "\">" +
                     "<span id=\"progress-" + id + "\" class=\"progressbar-container\">" +
@@ -290,17 +289,10 @@ var Uploader = (function() {
 
 
     function uploadFiles(files) {
-        if (files.length > 0) {
-            $(settings.file_list).addClass("visible");
-            $(settings.file_list_clear_button).css("display", "inline");
+        $(settings.file_list).addClass("visible");
+        $(settings.file_list_clear_button).css("display", "inline");
+        if (typeof files === "object" && files.length > 0) {
             $.each(files, function() { upload(this); });
-            if (!settings.smart_mode) {
-                var id = current_form_id;
-                async_exec(function() {
-                    $("#form-" + id).submit();
-                    generateUploadForm();
-                });
-            }
         }
     }
 
@@ -308,7 +300,9 @@ var Uploader = (function() {
     function generateUploadForm() {
         var id = ++current_form_id;
         $("#iframe-container")
-            .append("<iframe id=\"iframe-" + id + "\" name=\"iframe-" + id + "\"></iframe>" +
+            .append("<iframe id=\"iframe-" + id + "\"" +
+                    " name=\"iframe-" + id + "\"" +
+                    "></iframe>" +
                     "<form action=\"" + settings.form_upload_url + "\"" +
                     " target=\"iframe-" + id + "\"" +
                     " id=\"form-" + id + "\"" +
@@ -319,11 +313,15 @@ var Uploader = (function() {
                     "</form>");
         $("#fileinput-" + id)
             .bind("change", function(event) {
-                uploadFiles(event.originalEvent.target.files);
+                var files = event.target.files;
+                uploadFiles(files);
+                if (!settings.smart_mode) {
+                    generateUploadForm();
+                    event.target.form.submit();
+                }
+                event.preventDefault();
+                return false;
             })
-            .bind("click", function(event) {
-                console.log("Clicked");
-            });
         $(settings.file_input_button)
             .unbind("click")
             .bind("click", function() {
@@ -332,7 +330,7 @@ var Uploader = (function() {
         $("#iframe-" + id).bind("load", { id: id }, function(event) {
             var id = event.data.id,
             iframe = document.getElementById("iframe-" + id).contentDocument;
-            if (iframe.documentURI !== "about:blank") {
+            if (iframe.location.href !== "about:blank") {
                 $(".progressbar").addClass("ready");
                 $("#iframe-" + id).remove();
                 $("#form-" + id).remove();
@@ -377,7 +375,7 @@ var Uploader = (function() {
                                          "oder durch Klicken ausw&auml;hlen");
                 $(settings.file_input)
                     .bind("change", function(event) {
-                        uploadFiles(event.originalEvent.target.files);
+                        uploadFiles(event.target.files);
                     });
                 $(settings.file_input_button)
                     .click(function() {

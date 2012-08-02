@@ -30,7 +30,7 @@ h1, h2 {
     background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
     background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
     background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-color: DarkSlateGray;
+    background-color: #333;
     font-size: 16px;
     font-weight: bold;
     border-radius: 5px 5px 0 0;
@@ -257,7 +257,7 @@ button:hover {
     background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
     background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
     background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-color: DarkSlateGray;
+    background-color: #333;
     border-radius: 0 0 5px 5px;
     color: #999;
     padding: 1ex 1em;
@@ -274,4 +274,5 @@ button:hover {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: -100;
 }
