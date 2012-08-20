@@ -37,7 +37,6 @@ var Uploader = (function() {
     var progress = {};
     var form = {};
     var settings = defaults;
-    var file_names = {};
     var clipboard = undefined;
 
 
@@ -53,7 +52,6 @@ var Uploader = (function() {
         current_upload_id = 0;
         current_form_id = 0;
         progress = {};
-        file_names = {};
         $(settings.file_list).removeClass("visible");
         $(settings.file_list_clear_button).css("display", "none");
         setTimeout(function() {
@@ -142,7 +140,7 @@ var Uploader = (function() {
             async: true,
             data: {
                 id: id,
-                filename: file_names[id]
+                filename: progress[id].name
             }
         }).done(function(data) {
             $("#upload-" + id).addClass("deleted");
@@ -172,7 +170,7 @@ var Uploader = (function() {
                 var xhr = new XMLHttpRequest;
                 progress[id].xhr = xhr;
                 xhr.open("POST", settings.file_upload_url +
-                         "?filename=" + file_names[id] +
+                         "?filename=" + progress[id].name +
                          "&id=" + id +
                          "&startByte=" + startByte +
                          "&endByte=" + endByte,
@@ -256,14 +254,10 @@ var Uploader = (function() {
 
 
     function upload(file) {
-        var id = current_upload_id++, file_name;
-        file_name = (typeof file.name === "undefined") ?
-            (function() {
-                if (typeof file_names[id] === "undefined") {
-                    file_names[id] = (new Date).toISO() + "-" + id + ".png";
-                }
-                return file_names[id];
-            })() : file.name;
+        var id = current_upload_id++,
+        file_name = (typeof file.name === "undefined")
+            ? (new Date).toISO() + "-" + id + ".png"
+            : file.name;
         $(settings.file_list)
             .append("<li class=\"upload\" id=\"upload-" + id + "\">" +
                     "<span id=\"progress-" + id + "\" class=\"progressbar-container\">" +
