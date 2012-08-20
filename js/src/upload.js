@@ -363,13 +363,25 @@ var Uploader = (function() {
 
 
     function pasteHandler(e) {
-        var i, item, items = e.clipboardData.items;
-        if (items.length > 0) {
+        var items = e.originalEvent.clipboardData.items, i = items.length;
+        function isPNG(item) {
+            return (item.kind === "file") && (item.type === "image/png");
+        }
+        function clipboardContainsPNG() {
+            return (items.length > 0) && (function() {
+                var i = items.length;
+                while (i--) {
+                    if (isPNG(items[i]))
+                        return true;
+                }
+                return false;
+            })();
+        }
+        if (clipboardContainsPNG()) {
             showUploads();
-            for (i = 0; i < items.length; ++i) {
-                item = items[i];
-                if (item.kind === "file" && item.type === "image/png")
-                    upload(item.getAsFile());
+            while (i--) {
+                if (isPNG(items[i]))
+                    upload(items[i].getAsFile());
             }
         }
     }
@@ -453,9 +465,12 @@ var Uploader = (function() {
             $(settings.file_list_clear_button).click(clearFileList);
             $("#filedrop-hint").append(".<br/>Upload startet unmittelbar danach.");
 
-            document.onselectstart = function() { return false; };
-
-            window.addEventListener("paste", pasteHandler);
+            $(document).bind(
+                {
+                    paste: pasteHandler,
+                    selectstart: function() { return false; }
+                }
+            );
         }
     };
 })();
