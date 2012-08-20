@@ -37,12 +37,23 @@ var Uploader = (function() {
     var progress = {};
     var form = {};
     var settings = defaults;
+    var file_names = {};
+    var clipboard = undefined;
+
+
+    Date.prototype.toISO = function() {
+        function pad(n) { return result = ("0" + n).slice(-2); }
+        return [ this.getFullYear(), pad(this.getMonth()+1), pad(this.getDate()) ].join("") +
+            "T" +
+            [ pad(this.getHours()), pad(this.getMinutes()), pad(this.getSeconds()) ].join("");
+    }
 
 
     function reset() {
         current_upload_id = 0;
         current_form_id = 0;
         progress = {};
+        file_names = {};
         $(settings.file_list).removeClass("visible");
         $(settings.file_list_clear_button).css("display", "none");
         setTimeout(function() {
@@ -131,7 +142,7 @@ var Uploader = (function() {
             async: true,
             data: {
                 id: id,
-                filename: progress[id].file.name
+                filename: file_names[id]
             }
         }).done(function(data) {
             $("#upload-" + id).addClass("deleted");
@@ -161,7 +172,7 @@ var Uploader = (function() {
                 var xhr = new XMLHttpRequest;
                 progress[id].xhr = xhr;
                 xhr.open("POST", settings.file_upload_url +
-                         "?filename=" + file.name +
+                         "?filename=" + file_names[id] +
                          "&id=" + id +
                          "&startByte=" + startByte +
                          "&endByte=" + endByte,
@@ -245,15 +256,21 @@ var Uploader = (function() {
 
 
     function upload(file) {
-        var id = current_upload_id;
-        ++current_upload_id;
+        var id = current_upload_id++, file_name;
+        file_name = (typeof file.name === "undefined") ?
+            (function() {
+                if (typeof file_names[id] === "undefined") {
+                    file_names[id] = (new Date).toISO() + "-" + id + ".png";
+                }
+                return file_names[id];
+            })() : file.name;
         $(settings.file_list)
             .append("<li class=\"upload\" id=\"upload-" + id + "\">" +
                     "<span id=\"progress-" + id + "\" class=\"progressbar-container\">" +
                     "<span id=\"progressbar-" + id + "\" class=\"progressbar\"></span>" + 
                     "</span>" +
                     "<span id=\"action-bar-" + id + "\"></span> " +
-                    "<span id=\"filename-" + id + "\">" + file.name + "</span>" +
+                    "<span id=\"filename-" + id + "\">" + file_name + "</span>" +
                     " (" + styleSize(file.size) + ", " +
                     "<span id=\"speed-" + id + "\">? KB/s</span>)" +
                     "</li>");
@@ -271,6 +288,7 @@ var Uploader = (function() {
                 });
             progress[id] = {
                 file: file,
+                name: file_name,
                 startTime: Date.now(),
                 bytesSent: 0,
                 abort: false,
@@ -288,9 +306,14 @@ var Uploader = (function() {
     }
 
 
-    function uploadFiles(files) {
+    function showUploads() {
         $(settings.file_list).addClass("visible");
         $(settings.file_list_clear_button).css("display", "inline");
+    }
+
+
+    function uploadFiles(files) {
+        showUploads();
         if (typeof files === "object" && files.length > 0) {
             $.each(files, function() { upload(this); });
         }
@@ -339,6 +362,19 @@ var Uploader = (function() {
     }
 
 
+    function pasteHandler(e) {
+        var i, item, items = e.clipboardData.items;
+        if (items.length > 0) {
+            showUploads();
+            for (i = 0; i < items.length; ++i) {
+                item = items[i];
+                if (item.kind === "file" && item.type === "image/png")
+                    upload(item.getAsFile());
+            }
+        }
+    }
+
+
     return {
         init: function(opts) {
             // Pruefen, ob Browser SVG darstellen kann. Wenn nicht, PNGs verwenden.
@@ -372,7 +408,9 @@ var Uploader = (function() {
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
-                                         "oder durch Klicken ausw&auml;hlen");
+                                         "oder durch Klicken ausw&auml;hlen, " +
+                                         "Grafiken aus der Zwischenablage " +
+                                         "per Strg-V einf&uuml;gen");
                 $(settings.file_input)
                     .bind("change", function(event) {
                         uploadFiles(event.target.files);
@@ -413,7 +451,11 @@ var Uploader = (function() {
                 generateUploadForm();
             }
             $(settings.file_list_clear_button).click(clearFileList);
-            $("#filedrop-hint").append(".<br/>Upload startet sofort nach der Auswahl.");
+            $("#filedrop-hint").append(".<br/>Upload startet unmittelbar danach.");
+
+            document.onselectstart = function() { return false; };
+
+            window.addEventListener("paste", pasteHandler);
         }
     };
 })();
