@@ -11,7 +11,6 @@ html, body {
 }
 body {
     margin: 8px;
-    //opacity: 0;
     border: 1px solid Black;
     border-radius: 5px;
     box-shadow: 0px 0px 5px #888;
@@ -39,6 +38,11 @@ h1, h2 {
 }
 #mode {
     float: right;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background-repeat: no-repeat;
+    background-color: transparent;
 }
 h2 {
     margin: 0;

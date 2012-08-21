@@ -17,7 +17,8 @@ Copyright 2012 Oliver Lau, Heise Zeitschriften Verlag
 
 
 var Uploader = (function() {
-    var defaults = {
+    var smart_mode_allowed = window.File && window.FileReader && window.XMLHttpRequest,
+    defaults = {
         upload_dir: "/uploaded",
         file_upload_url: "/uploader2/upload.php",
         form_upload_url: "/uploader2/form-upload.php",
@@ -30,13 +31,12 @@ var Uploader = (function() {
         chunk_size: 100*1024, // bytes
         resume_interval: 2500, // ms
         resume_automatically: true, // automatically resume stalled uploads
-        smart_mode: window.File && window.FileReader && window.XMLHttpRequest
+        smart_mode: smart_mode_allowed
     },
     settings = defaults,
     current_upload_id = 0,
     current_form_id = 0,
     progress = {},
-    form = {},
     monitor_timer = undefined;
     
 
@@ -266,8 +266,8 @@ var Uploader = (function() {
         };
         reader.readAsArrayBuffer(blob);
     }
-
-
+    
+    
     function upload(file) {
         var id = current_upload_id++,
         lastByte, blob,
@@ -474,13 +474,8 @@ var Uploader = (function() {
                 $("#play-button").replaceWith("<img id=\"play-button\" src=\"img/play-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
                 $("#stop-button").replaceWith("<img id=\"stop-button\" src=\"img/stop-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
                 $("#pause-button").replaceWith("<img id=\"pause-button\" src=\"img/pause-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
-                $("#mode")
-                    .append("<img src=\"img/dumb-mode-icon.png\" alt=\"dumb mode\" title=\"dumb mode\" />");
             }
-            else {
-                $("#mode")
-                    .append("<img src=\"img/smart-mode-icon.png\" alt=\"smart mode\" title=\"smart mode\" />");
-            }
+            
             // Site-spezifische Einstellungen aus Konfigurationsdatei lesen
             $.ajax("config.json", { async: false })
                 .done(function(data) {
@@ -492,9 +487,16 @@ var Uploader = (function() {
                 });
             // Einstellungen ggf. mit init()-Parametern ueberschreiben
             settings = $.extend({}, settings, opts);
-            settings.smart_mode = settings.smart_mode && defaults.smart_mode;
+            settings.smart_mode = settings.smart_mode && smart_mode_allowed;
+            if (settings.smart_mode)
+                $("#mode").css("background-image", "url(img/smart-mode-icon.png)")
+                    .attr("title", "smart mode");
+            else
+                $("#mode").css("background-image", "url(img/dumb-mode-icon.png)")
+                    .attr("title", "dumb mode");
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
+
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
                                          "oder durch Klicken ausw&auml;hlen. " +
                                          "<br/>" +
