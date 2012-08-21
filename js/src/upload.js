@@ -27,7 +27,9 @@ var Uploader = (function() {
         upload_form: "#upload-form",
         file_input_button: "#fileinput-button",
         file_list_clear_button: "#filelist-clear-button",
-        chunk_size: 100*1024,
+        chunk_size: 100*1024, // bytes
+        resume_interval: 2500, // ms
+        resume_automatically: true, // automatically resume stalled uploads
         smart_mode: window.File && window.FileReader && window.XMLHttpRequest
     },
     settings = defaults,
@@ -321,6 +323,9 @@ var Uploader = (function() {
     /// gleitenden Mittelwert des Durchsatzes der vergangenen fuenf Bloecke.
     /// Liegt er mindestens 10 Prozent darunter, nimmt die Funktion an, dass 
     /// der Upload stockt.
+    /// Wenn settings.resume_automatically == true, dann wird der Upload per
+    /// resumeUpload() nach einer Wartezeit von resume_interval Millisekunden
+    /// automatisch fortgesetzt.
     function monitorUploads() {
         var Threshold = 0.9,
         pending_uploads = Object.keys(progress),
@@ -343,13 +348,16 @@ var Uploader = (function() {
                 if (stalled) {
                     $("#speed-" + id).css("color", "red")
                         .css("font-weight", "bold").text("stockt");
-                    if (typeof progress[id].stalledTime === "undefined") {
-                        progress[id].stalledTime = Date.now();
-                    }
-                    else {
-                        if (progress[id].stalledTime + 2500 < Date.now()) {
-                            pauseUpload(id);
-                            async_exec(function() { resumeUpload(id); });
+                    if (settings.resume_automatically) {
+                        if (typeof progress[id].stalledTime === "undefined") {
+                            progress[id].stalledTime = Date.now();
+                        }
+                        else {
+                            if (progress[id].stalledTime + settings.resume_interval < Date.now()) {
+                                pauseUpload(id);
+                                async_exec(function() { resumeUpload(id); });
+                                progress[id].stalledTime = Date.now();
+                            }
                         }
                     }
                 }
