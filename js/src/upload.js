@@ -92,11 +92,6 @@ var Uploader = (function() {
     }
 
 
-    Math.fract = function(x) {
-        return x - Math.floor(x);
-    }
-
-
     function styleTime(secs) {
         var hours = Math.floor(secs / 3600),
         minutes = Math.floor((secs - hours * 3600) / 60),
@@ -335,6 +330,8 @@ var Uploader = (function() {
         else {
             $("#progressbar-" + id).css("width", "100%");
         }
+        if (typeof monitor_timer === "undefined")
+            monitor_timer = setInterval(monitorUploads, 1000);
     }
 
 
@@ -355,7 +352,7 @@ var Uploader = (function() {
         if (i == 0) {
             if (monitor_timer) {
                 clearInterval(monitor_timer);
-                delete monitor_timer;
+                monitor_timer = undefined;
             }
         }
         else {
@@ -363,6 +360,7 @@ var Uploader = (function() {
                 id = pending_uploads[i];
                 if (progress[id].pause || progress[id].abort)
                     continue;
+                console.log("Checking " + id);
                 secs = (Date.now() - progress[id].startTime) / 1000;
                 throughput = progress[id].bytesSent / secs;
                 eta = (progress[id].file.size - progress[id].bytesSent) / throughput;
@@ -397,8 +395,6 @@ var Uploader = (function() {
     function showUploads() {
         $(settings.file_list).addClass("visible");
         $(settings.file_list_clear_button).css("display", "inline");
-        if (typeof monitor_timer === "undefined")
-            monitor_timer = setInterval(monitorUploads, 1000);
     }
 
 
