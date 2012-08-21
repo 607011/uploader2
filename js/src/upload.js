@@ -38,10 +38,14 @@ var Uploader = (function() {
     current_form_id = 0,
     progress = {},
     monitor_timer = undefined;
+
+
+    function pad(n) {
+        return result = ("0" + n).slice(-2);
+    }
     
 
     Date.prototype.toISO = function() {
-        function pad(n) { return result = ("0" + n).slice(-2); }
         return [ this.getFullYear(), pad(this.getMonth()+1), pad(this.getDate()) ].join("") +
             "T" +
             [ pad(this.getHours()), pad(this.getMinutes()), pad(this.getSeconds()) ].join("");
@@ -85,6 +89,19 @@ var Uploader = (function() {
         else {
             reset();
         }
+    }
+
+
+    Math.fract = function(x) {
+        return x - Math.floor(x);
+    }
+
+
+    function styleTime(secs) {
+        var hours = Math.floor(secs / 3600),
+        minutes = Math.floor((secs - hours * 3600) / 60),
+        seconds = Math.floor((secs - hours * 3600 - minutes * 60));
+        return pad(hours) + "h" + pad(minutes) + "'" + pad(seconds) + "''";
     }
 
 
@@ -215,7 +232,8 @@ var Uploader = (function() {
                             $("#filename-" + d.id)
                                 .replaceWith("<a target=\"_blank\" " +
                                              "href=\"" + settings.upload_dir + "/" +
-                                             d.filename + "\">" + d.filename + "</a>"); 
+                                             d.filename + "\">" + d.filename + "</a>");
+                            $("#eta-" + d.id).text("OK");
                             $("#action-bar-" + d.id).remove();
                             delete progress[d.id];
                         }
@@ -282,7 +300,8 @@ var Uploader = (function() {
                     "<span id=\"action-bar-" + id + "\"></span> " +
                     "<span id=\"filename-" + id + "\">" + file_name + "</span>" +
                     " (" + styleSize(file.size) + ", " +
-                    "<span id=\"speed-" + id + "\">? KB/s</span>)" +
+                    "<span id=\"speed-" + id + "\">? KB/s</span>, " +
+                    "<span id=\"eta-" + id + "\">t&minus;?</span>)" +
                     "</li>");
         $("#upload-" + id).addClass("starting");
         if (settings.smart_mode) {
@@ -332,7 +351,7 @@ var Uploader = (function() {
         var Threshold = 0.9,
         pending_uploads = Object.keys(progress),
         i = pending_uploads.length,
-        id, secs, throughput, stalled;
+        id, secs, throughput, eta, stalled;
         if (i == 0) {
             if (monitor_timer) {
                 clearInterval(monitor_timer);
@@ -346,6 +365,8 @@ var Uploader = (function() {
                     continue;
                 secs = (Date.now() - progress[id].startTime) / 1000;
                 throughput = progress[id].bytesSent / secs;
+                eta = (progress[id].file.size - progress[id].bytesSent) / throughput;
+                $("#eta-" + id).html("t&minus;" + styleTime(eta));
                 stalled = throughput < Threshold * progress[id].throughput_moving_avg;
                 if (stalled) {
                     $("#speed-" + id).css("color", "red")
@@ -464,7 +485,6 @@ var Uploader = (function() {
                 try {
                     svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 } catch (e) { console.warn(e); }
-                console.log(navigator.userAgent);
                 return (typeof svg !== "undefined") &&
                     (!navigator.userAgent.match(/(Safari|MSIE [5-9])/) ||
                      navigator.userAgent.match(/Chrome/));
