@@ -130,8 +130,10 @@ var Uploader = (function() {
 
 
     function abortUpload(id) {
-        progress[id].abort = true;
-        progress[id].xhr.abort();
+        if (confirm("Wollen Sie den Upload wirklich abbrechen?")) {
+            progress[id].abort = true;
+            progress[id].xhr.abort();
+        }
     }
 
 
