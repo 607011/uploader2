@@ -29,16 +29,14 @@ var Uploader = (function() {
         file_list_clear_button: "#filelist-clear-button",
         chunk_size: 100*1024,
         smart_mode: window.File && window.FileReader && window.XMLHttpRequest
-    };
-
-
-    var current_upload_id = 0;
-    var current_form_id = 0;
-    var progress = {};
-    var form = {};
-    var settings = defaults;
-    var clipboard = undefined;
-
+    },
+    settings = defaults,
+    current_upload_id = 0,
+    current_form_id = 0,
+    progress = {},
+    form = {},
+    monitor_timer = undefined;
+    
 
     Date.prototype.toISO = function() {
         function pad(n) { return result = ("0" + n).slice(-2); }
@@ -89,8 +87,7 @@ var Uploader = (function() {
 
 
     function styleSize(n) {
-        var prefixes = [ "KB", "MB", "GB" ];
-        var prefix = "bytes";
+        var prefixes = [ "KB", "MB", "GB" ], prefix = "bytes";
         while (n > 10240 && prefixes.length > 0) {
             n /= 1024;
             prefix = prefixes.shift();
@@ -112,6 +109,7 @@ var Uploader = (function() {
 
 
     function resumeUpload(id) {
+        var startByte, endByte, blob;
         progress[id].pause = false;
         progress[id].abort = false;
         $("#play-button-" + id).remove();
@@ -120,11 +118,11 @@ var Uploader = (function() {
             .click(function() {
                 pauseUpload(id);
             });
-        var startByte = progress[id].bytesSent;
-        var endByte = startByte + settings.chunk_size;
+        startByte = progress[id].bytesSent;
+        endByte = startByte + settings.chunk_size;
         if (endByte > progress[id].file.size)
             endByte = progress[id].file.size;
-        var blob = makeChunk(progress[id].file, startByte, endByte);
+        blob = makeChunk(progress[id].file, startByte, endByte);
         uploadChunk(progress[id].file, blob, id, startByte, endByte);
     }
 
@@ -176,21 +174,33 @@ var Uploader = (function() {
                          "&endByte=" + endByte,
                          true);
                 xhr.onload = function(e) {
-                    var d = JSON.parse(xhr.responseText);
+                    var d = JSON.parse(xhr.responseText),
+                    secs, throughput, i, percentage, blob, sum;
                     if (typeof progress[d.id] === "undefined")
                         return;
                     if (d.status === "ok") {
                         progress[d.id].bytesSent += d.endByte - d.startByte;
-                        var secs = 1e-3 * (Date.now() - progress[d.id].startTime);
+                        secs = (Date.now() - progress[d.id].startTime) / 1000;
                         if (progress[d.id].bytesSent < file.size) {
-                            var percentage = 100 * progress[d.id].bytesSent / file.size;
+                            throughput = progress[d.id].bytesSent / secs;
+                            progress[d.id].throughput.push(throughput);
+                            if (progress[d.id].throughput.length > 5) {
+                                progress[d.id].throughput.shift();
+                                i = progress[d.id].throughput.length;
+                                sum = 0;
+                                while (i--)
+                                    sum += progress[d.id].throughput[i];
+                                progress[d.id].throughput_moving_avg =
+                                    sum / progress[d.id].throughput.length;
+                            }
+                            percentage = Math.round(100 * progress[d.id].bytesSent / file.size);
                             $("#progressbar-" + d.id).css("width", percentage + "%");
-                            $("#speed-" + d.id).html(styleSize(progress[d.id].bytesSent / secs) + "/s");
+                            $("#speed-" + d.id).html(styleSize(throughput) + "/s");
                             startByte = endByte;
                             endByte += settings.chunk_size;
                             if (endByte > file.size)
                                 endByte = file.size;
-                            var blob = makeChunk(file, startByte, endByte);
+                            blob = makeChunk(file, startByte, endByte);
                             uploadChunk(file, blob, id, startByte, endByte);
                         }
                         else {
@@ -198,9 +208,10 @@ var Uploader = (function() {
                             $("#progressbar-" + d.id).css("width", "100%");
                             $("#upload-" + d.id).addClass("ready");
                             $("#speed-" + d.id).html(styleSize(file.size / secs) + "/s");
-                            $("#filename-" + d.id).replaceWith("<a target=\"_blank\" " +
-                                                               "href=\"" + settings.upload_dir + "/" +
-                                                               d.filename + "\">" + d.filename + "</a>"); 
+                            $("#filename-" + d.id)
+                                .replaceWith("<a target=\"_blank\" " +
+                                             "href=\"" + settings.upload_dir + "/" +
+                                             d.filename + "\">" + d.filename + "</a>"); 
                             $("#action-bar-" + d.id).remove();
                             delete progress[d.id];
                         }
@@ -239,7 +250,7 @@ var Uploader = (function() {
                 alert("Datei ist nicht lesbar.");
                 break;
             case e.target.error.ABORT_ERR:
-                console.log("Lesen der Datei abgebrochen.");
+                console.warn("Lesen der Datei abgebrochen.");
                 break;
             default:
                 alert("Beim Zugriff auf die Datei ist ein Fehler aufgetreten.");
@@ -255,6 +266,7 @@ var Uploader = (function() {
 
     function upload(file) {
         var id = current_upload_id++,
+        lastByte, blob,
         file_name = (typeof file.name === "undefined")
             ? (new Date).toISO() + "-" + id + ".png"
             : file.name;
@@ -285,13 +297,16 @@ var Uploader = (function() {
                 name: file_name,
                 startTime: Date.now(),
                 bytesSent: 0,
+                throughput: [],
+                throughput_moving_avg: 0,
+                stalledTime: undefined,
                 abort: false,
                 pause: false,
                 xhr: null
             };
             // ersten Chunk hochladen, weitere Chunks werden via onload-Handler angestossen
-            var lastByte = (file.size < settings.chunk_size)? file.size : settings.chunk_size;
-            var blob = makeChunk(file, 0, lastByte);
+            lastByte = (file.size < settings.chunk_size)? file.size : settings.chunk_size;
+            blob = makeChunk(file, 0, lastByte);
             uploadChunk(file, blob, id, 0, lastByte);
         }
         else {
@@ -300,9 +315,59 @@ var Uploader = (function() {
     }
 
 
+    /// Im Sekundentakt nachschauen, ob ein Upload ins Stocken geraten ist.
+    /// Wenn ja, wird die Uploadratenanzeige optisch hervorgehoben.
+    /// Die Funktion vergleicht den Durchsatz seit Start des Uploads mit dem
+    /// gleitenden Mittelwert des Durchsatzes der vergangenen fuenf Bloecke.
+    /// Liegt er mindestens 10 Prozent darunter, nimmt die Funktion an, dass 
+    /// der Upload stockt.
+    function monitorUploads() {
+        var Threshold = 0.9,
+        pending_uploads = Object.keys(progress),
+        i = pending_uploads.length,
+        id, secs, throughput, stalled;
+        if (i == 0) {
+            if (monitor_timer) {
+                clearInterval(monitor_timer);
+                delete monitor_timer;
+            }
+        }
+        else {
+            while (i--) {
+                id = pending_uploads[i];
+                if (progress[id].pause || progress[id].abort)
+                    continue;
+                secs = (Date.now() - progress[id].startTime) / 1000;
+                throughput = progress[id].bytesSent / secs;
+                stalled = throughput < Threshold * progress[id].throughput_moving_avg;
+                if (stalled) {
+                    $("#speed-" + id).css("color", "red")
+                        .css("font-weight", "bold").text("stockt");
+                    if (typeof progress[id].stalledTime === "undefined") {
+                        progress[id].stalledTime = Date.now();
+                    }
+                    else {
+                        if (progress[id].stalledTime + 2500 < Date.now()) {
+                            pauseUpload(id);
+                            async_exec(function() { resumeUpload(id); });
+                        }
+                    }
+                }
+                else {
+                    $("#speed-" + id).css("color", "")
+                        .css("font-weight", "");
+                    progress[id].stalledTime = undefined;
+                }
+            }
+        }
+    }
+
+
     function showUploads() {
         $(settings.file_list).addClass("visible");
         $(settings.file_list_clear_button).css("display", "inline");
+        if (typeof monitor_timer === "undefined")
+            monitor_timer = setInterval(monitorUploads, 1000);
     }
 
 
@@ -357,22 +422,22 @@ var Uploader = (function() {
 
 
     function pasteHandler(e) {
-        var items = e.originalEvent.clipboardData.items, i = items.length;
+        var items = e.originalEvent.clipboardData.items, i;
         function isPNG(item) {
             return (item.kind === "file") && (item.type === "image/png");
         }
         function clipboardContainsPNG() {
             return (items.length > 0) && (function() {
                 var i = items.length;
-                while (i--) {
+                while (i--)
                     if (isPNG(items[i]))
                         return true;
-                }
                 return false;
             })();
         }
         if (clipboardContainsPNG()) {
             showUploads();
+            i = items.length;
             while (i--) {
                 if (isPNG(items[i]))
                     upload(items[i].getAsFile());
@@ -388,16 +453,23 @@ var Uploader = (function() {
                 var svg;
                 try {
                     svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                } catch (e) { console.log(e); }
-                return typeof svg !== "undefined" ||
-                    (navigator.userAgent.match(/(Safari|MSIE [5-9])/)
-                     && !navigator.userAgent.match(/Chrome/));
+                } catch (e) { console.warn(e); }
+                console.log(navigator.userAgent);
+                return (typeof svg !== "undefined") &&
+                    (!navigator.userAgent.match(/(Safari|MSIE [5-9])/) ||
+                     navigator.userAgent.match(/Chrome/));
             })();
             if (!svgSupported) {
                 $("#upload-icon").replaceWith("<img id=\"upload-icon\" src=\"img/upload-icon.png\" width=\"200\" height=\"140\">");
                 $("#play-button").replaceWith("<img id=\"play-button\" src=\"img/play-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
                 $("#stop-button").replaceWith("<img id=\"stop-button\" src=\"img/stop-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
                 $("#pause-button").replaceWith("<img id=\"pause-button\" src=\"img/pause-button.png\" width=\"12\" height=\"12\" class=\"mini-button\">");
+                $("#mode")
+                    .append("<img src=\"img/dumb-mode-icon.png\" alt=\"dumb mode\" title=\"dumb mode\" />");
+            }
+            else {
+                $("#mode")
+                    .append("<img src=\"img/smart-mode-icon.png\" alt=\"smart mode\" title=\"smart mode\" />");
             }
             // Site-spezifische Einstellungen aus Konfigurationsdatei lesen
             $.ajax("config.json", { async: false })
@@ -406,7 +478,7 @@ var Uploader = (function() {
                     settings = $.extend({}, settings, config_opts);
                 })
                 .error(function(jqXHR, textStatus, errorThrown) {
-                    console.log([jqXHR, textStatus, errorThrown]);
+                    console.warn([jqXHR, textStatus, errorThrown]);
                 });
             // Einstellungen ggf. mit init()-Parametern ueberschreiben
             settings = $.extend({}, settings, opts);
@@ -414,9 +486,10 @@ var Uploader = (function() {
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
-                                         "oder durch Klicken ausw&auml;hlen, " +
+                                         "oder durch Klicken ausw&auml;hlen. " +
+                                         "<br/>" +
                                          "Grafiken aus der Zwischenablage " +
-                                         "per Strg-V einf&uuml;gen");
+                                         "per Strg-V einf&uuml;gen.");
                 $(settings.file_input)
                     .bind("change", function(event) {
                         uploadFiles(event.target.files);
@@ -453,11 +526,11 @@ var Uploader = (function() {
                 );
             }
             else { // fallback mode
-                $("#filedrop-hint").html("Hochzuladende Dateien durch Klicken ausw&auml;hlen");
+                $("#filedrop-hint").html("Hochzuladende Dateien durch Klicken ausw&auml;hlen.");
                 generateUploadForm();
             }
             $(settings.file_list_clear_button).click(clearFileList);
-            $("#filedrop-hint").append(".<br/>Upload startet unmittelbar danach.");
+            $("#filedrop-hint").append("<br/><br/>Der Upload startet unmittelbar danach.");
 
             $(document).bind(
                 {
@@ -465,6 +538,7 @@ var Uploader = (function() {
                     selectstart: function() { return false; }
                 }
             );
+
         }
     };
 })();

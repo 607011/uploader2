@@ -37,6 +37,9 @@ h1, h2 {
     color: white;
     padding: 1ex 1em;
 }
+#mode {
+    float: right;
+}
 h2 {
     margin: 0;
     font-size: 12px;
