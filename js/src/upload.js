@@ -519,7 +519,7 @@ var Uploader = (function() {
                                          "oder durch Klicken ausw&auml;hlen. " +
                                          "<br/>" +
                                          "Grafiken aus der Zwischenablage " +
-                                         "per Strg-V einf&uuml;gen.");
+                                         "per Strg-V einf&uuml;gen (nur Chrome).");
                 $(settings.file_input)
                     .bind("change", function(event) {
                         uploadFiles(event.target.files);
