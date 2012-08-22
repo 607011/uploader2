@@ -456,13 +456,11 @@ var Uploader = (function() {
             return (item.kind === "file") && (item.type === "image/png");
         }
         function clipboardContainsPNG() {
-            return (items.length > 0) && (function() {
-                var i = items.length;
-                while (i--)
-                    if (isPNG(items[i]))
-                        return true;
-                return false;
-            })();
+            var i = items.length;
+            while (i--)
+                if (isPNG(items[i]))
+                    return true;
+            return false;
         }
         if (clipboardContainsPNG()) {
             showUploads();
@@ -472,7 +470,7 @@ var Uploader = (function() {
                     upload(items[i].getAsFile());
             }
         }
-    }
+     }
 
 
     return {
