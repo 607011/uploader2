@@ -514,12 +514,11 @@ var Uploader = (function() {
                     .attr("title", "dumb mode");
             $("h2 > a").attr("href", settings.upload_dir);
             if (settings.smart_mode) {
-
                 $("#filedrop-hint").html("Hochzuladende Dateien hier ablegen " +
-                                         "oder durch Klicken ausw&auml;hlen. " +
-                                         "<br/>" +
-                                         "Grafiken aus der Zwischenablage " +
-                                         "per Strg-V einf&uuml;gen (nur Chrome).");
+                                         "oder durch Klicken ausw&auml;hlen.");
+                if (navigator.userAgent.match(/Chrome/))
+                    $("#filedrop-hint").append("<br/>Grafiken aus der Zwischenablage " +
+                                               "per Strg-V einf&uuml;gen.")
                 $(settings.file_input)
                     .bind("change", function(event) {
                         uploadFiles(event.target.files);
