@@ -451,25 +451,22 @@ var Uploader = (function() {
 
 
     function pasteHandler(e) {
-        var items = e.originalEvent.clipboardData.items, i;
+        var items = e.originalEvent.clipboardData.items, i, uploads_initiated = false;
         function isPNG(item) {
-            return (item.kind === "file") && (item.type === "image/png");
+            return item.kind === "file" && item.type === "image/png";
         }
-        function clipboardContainsPNG() {
-            var i = items.length;
-            while (i--)
-                if (isPNG(items[i]))
-                    return true;
-            return false;
-        }
-        if (clipboardContainsPNG()) {
-            showUploads();
-            i = items.length;
-            while (i--) {
-                if (isPNG(items[i]))
-                    upload(items[i].getAsFile());
+        i = items.length;
+        while (i--) {
+            if (isPNG(items[i])) {
+                upload(items[i].getAsFile());
+                uploads_initiated = true;
             }
+            // TODO: ggf. weitere MIME-Typen erlauben, etwa text/plain,
+            // text/html oder application/xml.
+            // Siehe http://dev.w3.org/2006/webapi/clipops/#mandatory-data-types-1
         }
+        if (uploads_initiated)
+            showUploads();
      }
 
 
