@@ -15,6 +15,8 @@ echo MAKING DIRECTORIES IN ${DIR} ..
 mkdir -p ${DIR}/js
 mkdir -p ${DIR}/css
 mkdir -p ${DIR}/img
+mkdir -p ${DIR}/uploaded
+chmod 0775 ${DIR}/uploaded
 
 PATHTOYUI=`pwd`/bin
 echo COMPRESSING JAVASCRIPTS ..
@@ -47,6 +49,6 @@ cp LICENSE.txt ${DIR}/LICENSE
 sed -e "s/js\/src/js/" -e "s/css\/src/css/" index.html > ${DIR}/index.html
 
 echo BUILDING ARCHIVE ${DIR}.tar.gz ..
-tar -czf ${DIR}.tar.gz ${DIR}/*
+tar -czf ${DIR}.tar.gz --owner=nobody --group=www-data ${DIR}/*
 
 echo READY.

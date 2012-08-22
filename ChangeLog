@@ -11,9 +11,8 @@ v0.9.5
 	wenn der Parameter settings.resume_automatically auf true gesetzt
 	ist.
 
-	Issue #6 gefixt: Ins Stocken geratene Uploads werden optisch hervorgehoben.
-
-	Per Drag'n'Drop hochgeladene Dateien sind nun wieder korrekt benannt ...
+	Issue #6 gefixt: Ins Stocken geratene Uploads werden optisch
+	hervorgehoben.
 
 	Issue #4 gefixt: Grafiken lassen sich nun direkt aus der
 	Zwischenablage per Strg-V einfuegen
