@@ -65,7 +65,7 @@ var Uploader = (function() {
 
 
     function async_exec(f, ms) {
-        ms = ms || 100;
+        ms = ms || 0;
         setTimeout(f, ms);
     }
 
@@ -360,9 +360,12 @@ var Uploader = (function() {
                 id = pending_uploads[i];
                 if (progress[id].pause || progress[id].abort)
                     continue;
-                console.log("Checking " + id);
-                secs = (Date.now() - progress[id].startTime) / 1000;
+                secs = Math.floor((Date.now() - progress[id].startTime) / 1000);
+                if (secs == 0)
+                    continue;
                 throughput = progress[id].bytesSent / secs;
+                if (throughput == 0)
+                    continue;
                 eta = (progress[id].file.size - progress[id].bytesSent) / throughput;
                 $("#eta-" + id).html("t&minus;" + styleTime(eta));
                 stalled = throughput < Threshold * progress[id].throughput_moving_avg;
@@ -375,16 +378,15 @@ var Uploader = (function() {
                         }
                         else {
                             if (progress[id].stalledTime + settings.resume_interval < Date.now()) {
+                                progress[id].stalledTime = Date.now();
                                 pauseUpload(id);
                                 async_exec(function() { resumeUpload(id); });
-                                progress[id].stalledTime = Date.now();
                             }
                         }
                     }
                 }
                 else {
-                    $("#speed-" + id).css("color", "")
-                        .css("font-weight", "");
+                    $("#speed-" + id).css("color", "").css("font-weight", "");
                     progress[id].stalledTime = undefined;
                 }
             }
