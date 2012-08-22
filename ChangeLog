@@ -1,0 +1,23 @@
+v0.9.5
+
+	Hinweis, dass Grafik-Upload per Strg-V moeglich ist, erscheint
+	jetzt nur noch im Chrome.
+
+	Zu jedem Upload wird nun die ETA im Sekundenrhythmus aktualisiert.
+
+	Issue #5 gefixt: Kein Upload-Abbruch mehr ohne Rueckfrage.
+
+	Stockende Uploads werden automatisch angehalten und fortgesetzt,
+	wenn der Parameter settings.resume_automatically auf true gesetzt
+	ist.
+
+	Issue #6 gefixt: Ins Stocken geratene Uploads werden optisch hervorgehoben.
+
+	Per Drag'n'Drop hochgeladene Dateien sind nun wieder korrekt benannt ...
+
+	Issue #4 gefixt: Grafiken lassen sich nun direkt aus der
+	Zwischenablage per Strg-V einfuegen
+
+v0.9.0
+
+	Erstes Release.
