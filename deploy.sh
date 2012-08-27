@@ -8,34 +8,27 @@ then
 fi
 
 VERSION=$1
-DIR=uploader2-${VERSION}
+TARNAME=uploader2-${VERSION}
+TARGETDIR=uploader2
+DEPLOY=deploy
+DIR=${DEPLOY}/${TARGETDIR}
+ARCHIVEFILES="${TARGETDIR} uploaded"
 
 echo
+echo CLEANING ${DEPLOY} ..
+rm -Rf ${DEPLOY}
+mkdir ${DEPLOY}
+cd ${DEPLOY}
+
 echo MAKING DIRECTORIES IN ${DIR} ..
-mkdir -p ${DIR}/js
-mkdir -p ${DIR}/css
-mkdir -p ${DIR}/img
-mkdir -p ${DIR}/uploaded
-chmod 0775 ${DIR}/uploaded
+mkdir -p ${TARGETDIR}/js
+mkdir -p ${TARGETDIR}/css
+mkdir -p ${TARGETDIR}/img
+mkdir -p ${TARGETDIR}/../uploaded
+chmod 0775 ${TARGETDIR}/../uploaded
+touch ${TARGETDIR}/../uploaded/HIER_LANDEN_DIE_HOCHGELADENEN_DATEIEN
 
-PATHTOYUI=`pwd`/bin
-echo COMPRESSING JAVASCRIPTS ..
-cd js/src
-for f in *.js
-do
-  java -jar ${PATHTOYUI}/yuicompressor-2.4.2.jar -v --type js --charset utf-8 -o ../../${DIR}/js/$f $f
-done
-
-cd ../..
-
-echo COMPRESSING STYLESHEETS ..
-cd css/src
-for f in *.css
-do
-  java -jar ${PATHTOYUI}/yuicompressor-2.4.2.jar -v --type css --charset utf-8 -o ../../${DIR}/css/$f $f
-done
-
-cd ../..
+cd ..
 
 echo COPYING/CONVERTING FILES ..
 cp img/* ${DIR}/img
@@ -46,9 +39,15 @@ cp config.json ${DIR}
 cp ChangeLog ${DIR}
 cp README.txt ${DIR}/README
 cp LICENSE.txt ${DIR}/LICENSE
-sed -e "s/js\/src/js/" -e "s/css\/src/css/" index.html > ${DIR}/index.html
 
-echo BUILDING ARCHIVE ${DIR}.tar.gz ..
-tar -czf ${DIR}.tar.gz --owner=nobody --group=www-data ${DIR}/*
+cp index.html ${DIR}/index.html
+# sed -e "s/js\/src/js/" -e "s/css\/src/css/" index.html > ${DIR}/index.html
+
+cd ${DEPLOY}
+echo BUILDING ARCHIVE ${TARNAME}.zip ..
+zip -r ${TARNAME}.zip ${ARCHIVEFILES}
+
+echo BUILDING ARCHIVE ${TARNAME}.tar.gz ..
+tar -czf ${TARNAME}.tar.gz --owner=nobody --group=www-data ${ARCHIVEFILES}
 
 echo READY.
