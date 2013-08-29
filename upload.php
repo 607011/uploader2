@@ -4,7 +4,7 @@ $filename = $_GET["filename"];
 $id = intval($_GET["id"]);
 $startByte = intval($_GET["startByte"]);
 $endByte = intval($_GET["endByte"]);
-$fp = fopen("../uploaded/$filename", "cb");
+$fp = fopen("../uploads/$filename", "cb");
 $postdata = file_get_contents("php://input");
 fseek($fp, $startByte);
 fwrite($fp, $postdata);

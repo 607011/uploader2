@@ -1,7 +1,7 @@
 {
-        "upload_dir": "/uploaded",
-        "file_upload_url": "/uploader2/upload.php",
-        "form_upload_url": "/uploader2/form-upload.php",
+        "upload_dir": "/ct/uploads",
+        "file_upload_url": "/ct/uploader2/upload.php",
+        "form_upload_url": "/ct/uploader2/form-upload.php",
         "drop_area": "#filedrop",
         "file_list": "#filelist",
         "file_input": "#fileinput",

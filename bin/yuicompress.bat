@@ -1,5 +1,5 @@
 @ECHO OFF
-SET PATHTOYUI=%CD%\cmd
+SET PATHTOYUI=%CD%\bin
 ECHO.
 ECHO ==============================================
 ECHO COMPRESSING JAVASCRIPTS

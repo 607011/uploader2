@@ -4,7 +4,7 @@
 }
 html, body {
     font-size: 11px;
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: "Lucida Sans Typewriter", "Courier New", monospace;
     color: Black;
     background-color: White;
     -webkit-font-smoothing: antialiased;
@@ -25,16 +25,18 @@ body.starting {
     -webkit-transition: opacity 0.3s ease;
 }
 h1, h2 {
-    background-image: linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -o-linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -moz-linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -webkit-linear-gradient(bottom, Black 8%, DarkRed 89%);
     background-color: #333;
     font-size: 16px;
     font-weight: bold;
     border-radius: 5px 5px 0 0;
     color: white;
     padding: 1ex 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 #mode {
     float: right;
@@ -114,7 +116,7 @@ button {
     background-image: -o-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
     background-image: -moz-linear-gradient(bottom, rgb(220,220,220) 8%, rgb(255,255,255) 89%);
     background-image: -webkit-linear-gradient(bottom, rgb(200,200,200) 8%, rgb(250,250,250) 89%);
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: "Lucida Sans Typewriter", "Courier New", monospace;
     padding: 0.5ex 0.5em;
     font-size: 12px;
     margin: 1ex 0;
@@ -260,17 +262,17 @@ button:hover {
     -webkit-transition: opacity 0.25s linear;
 }
 #footer {
-    background-image: linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -o-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -moz-linear-gradient(bottom, Black 8%, SlateGray 89%);
-    background-image: -webkit-linear-gradient(bottom, Black 8%, SlateGray 89%);
+    background-image: linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -o-linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -moz-linear-gradient(bottom, Black 8%, DarkRed 89%);
+    background-image: -webkit-linear-gradient(bottom, Black 8%, DarkRed 89%);
     background-color: #333;
     border-radius: 0 0 5px 5px;
-    color: #999;
+    color: #ccc;
     padding: 1ex 1em;
 }
 #footer > a {
-    color: #ccc;
+    color: #eee;
     text-decoration: none;
 }
 .mini-button {

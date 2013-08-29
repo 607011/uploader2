@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
-<title>Uploader 2.0</title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="content-language" content="de" />
-<script charset="utf-8" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
-<link rel="stylesheet" media="screen" type="text/css" href="css/src/upload.css" />
-<link rel="icon" type="image/png" href="img/favicon.gif">
-<script charset="utf-8" type="text/javascript" src="js/src/upload.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-  Uploader.init();
-});
+  <title>Uploader 2.0</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="de" />
+  <script charset="utf-8" type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+  <link rel="stylesheet" media="screen" type="text/css" href="css/src/upload.css" />
+  <link rel="icon" type="image/png" href="img/favicon.gif">
+  <script charset="utf-8" type="text/javascript" src="js/src/upload.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      Uploader.init();
+    });
 </script>
-<!--
-Copyright 2012 Oliver Lau, Heise Zeitschriften Verlag
+  <!--
+   Copyright 2012-2013 Oliver Lau <ola@ct.de>, Heise Zeitschriften Verlag
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,50 +31,58 @@ Copyright 2012 Oliver Lau, Heise Zeitschriften Verlag
 -->
 </head>
 <body>
-<h1>Dateien hochladen<span id="mode"></span></h1>
-<div id="filedrop">
-  <div id="filedrop-inner-box">
-    <div id="filedrop-chooser">
-      <svg id="upload-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" width="200" height="140">
-        <linearGradient id="grd" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="10%" style="stop-color: rgb(27, 132, 224);" />
-          <stop offset="90%" style="stop-color: rgb(27, 62, 94);" />
-        </linearGradient>
-        <path transform="translate(10, 10) scale(1.5)" fill="White" d="M 0 10 Q 0 0 10 0 L 110 0 Q 120 0 120 10 L 120 60 Q 120 70 110 70 L 10 70 Q 0 70 0 60 L 0 10 Z" />
-        <path transform="translate(10, 10) scale(1.5)" fill="url(#grd)" d="M 0 10 Q 0 0 10 0 L 110 0 Q 120 0 120 10 L 120 60 Q 120 70 110 70 L 85 70 L 85 45 L 110 45 L 60 10 L 10 45 L 35 45 L 35 70 L 10 70 Q 0 70 0 60 L 0 10 Z" />
-      </svg>
-      <br />
-      <button class="huge" id="fileinput-button">Dateien ausw&auml;hlen</button>
-    </div><!-- filedrop-chooser -->
-    <div id="filedrop-hint"></div><!-- filedrop-hint -->
-    <form id="upload-form">
-      <input type="file" id="fileinput" multiple />
-    </form>
-  </div><!-- filedrop-inner-box -->
-</div><!-- filedrop -->
-<h2><a href="#">Uploads ^^</a></h2>
-<div id="filelist-container">
-  <ul id="filelist"></ul>
-  <button id="filelist-clear-button" style="display: none">Liste leeren</button>
-</div><!-- filelist-container -->
-<div id="footer">
-  Copyright &copy; 2012 <a href="mailto:ola@ct.de">Oliver Lau</a>, <a href="http://www.heise.de/" target="_blank">Heise Zeitschriften Verlag</a>. Lizenziert unter der <a href="www.apache.org/licenses/LICENSE-2.0.html" target="_blank">Apache License 2.0</a>.
-</div>
-<div style="display: none" id="secret-elements">
-  <svg class="mini-button" title="Abbrechen" id="stop-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
-    <rect x="0" y="0" width="12" height="12" fill="#fff" />
-    <rect x="1" y="1" width="10" height="10" fill="#c00" />
-  </svg>
-  <svg class="mini-button" title="Pausieren" id="pause-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
-    <rect x="0" y="0" width="12" height="12" fill="#fff" />
-    <rect x="2" y="1" width="3" height="10" fill="#00c" />
-    <rect x="7" y="1" width="3" height="10" fill="#00c" />
-  </svg>
-  <svg class="mini-button" title="Fortsetzen" id="play-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
-    <rect x="0" y="0" width="12" height="12" fill="#fff" />
-    <path d="M 1 1 L 11 5.5 L 1 11 Z" fill="#0c0" />
-  </svg>
-</div>
-<div id="iframe-container"></div>
+  <h1>Uploader 2.0<span id="mode"></span></h1>
+  <div id="filedrop">
+    <div id="filedrop-inner-box">
+      <div id="filedrop-chooser">
+        <svg id="upload-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" width="200" height="140">
+          <linearGradient id="grd" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="10%" style="stop-color: rgb(27, 132, 224);" />
+            <stop offset="90%" style="stop-color: rgb(27, 62, 94);" />
+          </linearGradient>
+          <path transform="translate(10, 10) scale(1.5)" fill="White" d="M 0 10 Q 0 0 10 0 L 110 0 Q 120 0 120 10 L 120 60 Q 120 70 110 70 L 10 70 Q 0 70 0 60 L 0 10 Z" />
+          <path transform="translate(10, 10) scale(1.5)" fill="url(#grd)" d="M 0 10 Q 0 0 10 0 L 110 0 Q 120 0 120 10 L 120 60 Q 120 70 110 70 L 85 70 L 85 45 L 110 45 L 60 10 L 10 45 L 35 45 L 35 70 L 10 70 Q 0 70 0 60 L 0 10 Z" />
+        </svg>
+        <br />
+        <button class="huge" id="fileinput-button">Dateien ausw&auml;hlen</button>
+      </div>
+      <!-- filedrop-chooser -->
+      <div id="filedrop-hint"></div>
+      <!-- filedrop-hint -->
+      <form id="upload-form">
+        <input type="file" id="fileinput" multiple />
+      </form>
+    </div>
+    <!-- filedrop-inner-box -->
+  </div>
+  <!-- filedrop -->
+  <h2><a href="#">Uploads ^^</a></h2>
+  <div id="filelist-container">
+    <ul id="filelist"></ul>
+    <button id="filelist-clear-button" style="display: none">Liste leeren</button>
+  </div>
+  <!-- filelist-container -->
+  <div id="footer">
+    Copyright &copy; 2012-2013 <a href="mailto:ola@ct.de">Oliver Lau</a>, <a href="http://www.heise.de/" target="_blank">Heise Zeitschriften Verlag</a>. Lizenziert unter der <a href="www.apache.org/licenses/LICENSE-2.0.html" target="_blank">Apache License 2.0</a>.
+  </div>
+  <div style="display: none" id="secret-elements">
+    <svg class="mini-button" id="stop-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
+      <rect x="0" y="0" width="12" height="12" fill="#fff" />
+      <rect x="1" y="1" width="10" height="10" fill="#c00" />
+      <title>Abbrechen</title>
+    </svg>
+    <svg class="mini-button" id="pause-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
+      <rect x="0" y="0" width="12" height="12" fill="#fff" />
+      <rect x="2" y="1" width="3" height="10" fill="#00c" />
+      <rect x="7" y="1" width="3" height="10" fill="#00c" />
+      <title>Pausieren</title>
+    </svg>
+    <svg class="mini-button" id="play-button" xmlns="http://www.w3.org/2000/svg" version="1.1" width="12" height="12">
+      <rect x="0" y="0" width="12" height="12" fill="#fff" />
+      <path d="M 1 1 L 11 5.5 L 1 11 Z" fill="#0c0" />
+      <title>Fortsetzen</title>
+    </svg>
+  </div>
+  <div id="iframe-container"></div>
 </body>
 </html>
