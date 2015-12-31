@@ -1,15 +1,15 @@
 NUTZUNGSHINWEISE
 
 Die Software "Uploader 2.0" wurde zu Lehr- und Demonstrationszwecken
-geschaffen und ist nicht für den produktiven Einsatz
-vorgesehen. Der Autor haftet daher nicht für Schäden, die aus
-der Nutzung der Software entstehen, und übernimmt keine Gewähr
-für ihre Vollständigkeit, Fehlerfreiheit und Eignung für
+geschaffen und ist nicht fÃ¼r den produktiven Einsatz
+vorgesehen. Der Autor haftet daher nicht fÃ¼r SchÃ¤den, die aus
+der Nutzung der Software entstehen, und Ã¼bernimmt keine GewÃ¤hr
+fÃ¼r ihre VollstÃ¤ndigkeit, Fehlerfreiheit und Eignung fÃ¼r
 einen bestimmten Zweck.
 
 Falls Sie beabsichtigen, den Code in eigenen Produkten zu verwenden,
 so ist das im Rahmen der Apache-Lizenz 2.0 kostenfrei gestattet (siehe
-die Datei LICENSE.txt für weitere Informationen).
+die Datei LICENSE.txt fÃ¼r weitere Informationen).
 
 
-Copyright (c) 2012 Heise Zeitschriften Verlag, Oliver Lau <ola@ct.de>
+Copyright (c) 2012-2015 Oliver Lau <ola@ct.de>, Heise Medien GmbH & Co. KG
